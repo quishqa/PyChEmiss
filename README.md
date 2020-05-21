@@ -5,14 +5,14 @@ Currently, It works with CBMZ/MOSAIC chemical mechanism and for surface emission
 
 ## Installation
 
-First, you need to install the modules that `aas4wrf.py` needs. We recommend to use anaconda.
+First, you need to install the packages that `aas4wrf.py` needs. We recommend to use anaconda.
 
 You can clone this repo by:
 ```
 git clone https://github.com/quishqa/AAS4WRF.py.git
 ```
 
-Then, install the modules located in `requirements.txt` or  by:
+Then, install the packages located in `requirements.txt` or  by:
 
 ```
 conda install --yes --file requirements.txt
