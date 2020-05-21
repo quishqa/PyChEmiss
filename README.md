@@ -1,7 +1,7 @@
 # aas4wrf.py
 
-`aas4wrf.py` is a Python script for create the `wrfchemi` file from local emissions need to run WRF-Chem model. It's based on his older broder [AAS4WRF.ncl](https://github.com/alvv1986/AAS4WRF).
-Currently, It works with CBMZ/MOSAIC chemical mechanism.
+`aas4wrf.py` is a Python script to create the `wrfchemi` file from local emissions needed to run WRF-Chem model. It's based on his older broder [AAS4WRF.ncl](https://github.com/alvv1986/AAS4WRF).
+Currently, It works with CBMZ/MOSAIC chemical mechanism and for surface emissions.
 
 ## Installation
 
