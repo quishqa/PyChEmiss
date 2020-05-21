@@ -2,5 +2,4 @@ numpy==1.18.1
 pandas==1.0.3
 xarray==0.15.1
 python-cdo==1.5.3
-cdo==1.9.8
 xesmf==0.2.0
