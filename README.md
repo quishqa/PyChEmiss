@@ -12,7 +12,7 @@ You can clone this repo by:
 git clone https://github.com/quishqa/AAS4WRF.py.git
 ```
 
-Then, install the modules by:
+Then, install the modules located in `requirements.txt` or  by:
 
 ```
 conda install --yes --file requirements.txt
@@ -24,7 +24,7 @@ If everything goes well, you are ready to go.
 To run this script you need the the `wrfinput_d0x` and your temporal and spatial disaggregated emissions. You can see the needed format by exploring `emissions.txt` file.
 
 ## Configuration file `aas4wrf.cfg`
-This file control some parameters to run the script.
+This file control some parameters to run the script. No `""` are required to enter parameter values.
 * `wrfinput_file`: the location of wrfinput_d0x.
 * `emission_file`: the location of the local emission file.
 * `nx` and `ny`: the number of longitude and latitude points in which local emission were spatially disaggregated.
@@ -38,3 +38,7 @@ To run the script, type:
 ```
 python aasrwrf.py aas4wrf.cfg
 ```
+
+### Expected Runtime
+
+In a desktop computer it takes 30 seconds to run.
