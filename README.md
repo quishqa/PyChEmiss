@@ -5,19 +5,22 @@ Currently, It works with CBMZ/MOSAIC chemical mechanism and for surface emission
 
 ## Installation
 
-First, you need to install the packages that `aas4wrf.py` needs. We recommend to use anaconda.
+You need to install the packages that `aas4wrf.py` needs. We recommend to use anaconda.
 
-You can clone this repo by:
+You can download this repo or clone it by:
+
 ```
 git clone https://github.com/quishqa/AAS4WRF.py.git
 ```
 
-Then you can install `espmy`, `xesmf` and `python-cdo`, by doing this `xarray`,
-`numpy` and `pandas` will be also installed, but first add `conda-forge` channel.
+Then add `conda-forge` channel by:
 
 ```
 conda config --add channels conda-forge
 ```
+
+Now you can install `espmy`, `xesmf` and `python-cdo`. By doing this, `xarray`,
+`numpy`,  `pandas`, and `cdo` will be also installed:
 
 ```
 conda install esmpy
@@ -28,7 +31,7 @@ conda install python-cdo
 It's important to first install `esmpy` to avoid [this issue](https://github.com/JiaweiZhuang/xESMF/issues/47#issuecomment-593322288).
 
 
-Or, you can install the packages located in `requirements.txt` by:
+Or, after adding `conda-forge` channel, you can install the packages located in `requirements.txt` by typing:
 
 ```
 conda install --yes --file requirements.txt
