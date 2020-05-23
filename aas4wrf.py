@@ -10,7 +10,7 @@ local emission information. It is based on his older brother AAS4WRF.ncl
 
 """
 
-import os, sys
+import os
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -18,22 +18,7 @@ import xesmf as xe
 import configparser
 from cdo import Cdo
 
-# Retrieving parameters from config file
-config_file = sys.argv[1]
-config = configparser.ConfigParser()
-config.read(config_file)
 
-
-wrfinput_file = config["Input"]["wrfinput_file"]
-emission_file = config["Input"]["emission_file"]
-
-n_lon = config.getint("Emission file", "nx")
-n_lat = config.getint("Emission file", "ny")
-start_date = config["Time Control"]["start_date"]
-end_date = config["Time Control"]["end_date"]
-
-reggrid_method = config['Reggriding']['method']
-output_name = config["Output Style"]["output_name"]
 
 def create_dataaaray_per_emi(emiss_df, pol, lat, lon, date):
     '''
@@ -245,84 +230,109 @@ def print_conservation(wrfchemi, emiss_input, pol):
 
 
 
-# Reading local emission file CBMZ/MOSAIC mechanism
-emiss_names = ['E_CO', 'E_HCHO', 'E_C2H5OH', 'E_KET', 'E_NH3', 'E_XYL', 'E_TOL',
-              'E_ISO', 'E_OLI', 'E_OLT', 'E_OL2', 'E_HC8', 'E_HC5', 'E_ORA2',
-              'E_ETH', 'E_ALD', 'E_CSL', 'E_SO2', 'E_HC3', 'E_NO2', 'E_NO',
-              'E_CH3OH', 'E_PM25I', 'E_PM25J', 'E_SO4I', 'E_SO4J', 'E_NO3I',
-              'E_NO3J', 'E_ORGI', 'E_ORGJ', 'E_ECI', 'E_ECJ', 'E_SO4C', 
-              'E_NO3C', 'E_ORGC', 'E_ECC']
-header_name = ["i", "lon", "lat"] + emiss_names
-emiss_df = pd.read_csv(emission_file, delim_whitespace=True, names=header_name)
-
-
-# Emission file dimensions
-n_points = n_lon * n_lat
-lon1d = emiss_df["lon"][: n_lon].values
-lat1d = emiss_df["lat"][: n_points: n_lon].values[::-1]
-date = pd.date_range(start_date + ' 00:00', end_date + ' 23:00', freq='H')
-
-
-# Transforming text into a xarray dataset, a xarray dataset is a group
-# of xarrya dataarray, a xarray dataarray is N-dimensional array with 
-# labeled coordinates and dimensions  
-
-# We save each emission species xarray in this dataset
-emiss_input = xr.Dataset()
-
-for emi in emiss_names:
-    emiss_input[emi] = create_dataaaray_per_emi(emiss_df, emi, 
-                                                lat1d, lon1d,
-                                                date)
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) < 2:
+        print('usage: python {} aasf4wrf.cfg'.format(sys.argv[0]))
+        sys.exit()
+        
+    # Retrieving parameters from config file
+    config_file = sys.argv[1]
+    config = configparser.ConfigParser()
+    config.read(config_file)
     
-# Reading wrfinput file
-wrfinput = xr.open_dataset(wrfinput_file)
-xlat = wrfinput.XLAT.values
-xlon = wrfinput.XLONG.values
-
-# Creating grids used for regridding
-wrf_coords = {
-    'lon': xlon[0, 0, :],
-    'lat': xlat[0, :, 0]
-    }
-
-emiss_coords = {
-    'lon': emiss_input.lon.values,
-    'lat': emiss_input.lat.values
-    }
-
-
-# Building wrfchemi data set
-if reggrid_method == 'conservative':
-    wrfchemi = conservative_method(wrf_coords, emiss_coords,
-                                   emiss_input, wrfinput)
-elif reggrid_method == 'nearest_s2d':
-    wrfchemi = nearest_method(wrf_coords, emiss_coords, emiss_input)
+    
+    wrfinput_file = config["Input"]["wrfinput_file"]
+    emission_file = config["Input"]["emission_file"]
+    
+    n_lon = config.getint("Emission file", "nx")
+    n_lat = config.getint("Emission file", "ny")
+    start_date = config["Time Control"]["start_date"]
+    end_date = config["Time Control"]["end_date"]
+    
+    reggrid_method = config['Reggriding']['method']
+    output_name = config["Output Style"]["output_name"]
     
 
-# Building wrfchemi netcdf
-for key, value in wrfinput.attrs.items():
-    wrfchemi.attrs[key] = value
 
-wrfchemi['TITLE'] = "OUTPUT FROM AAS4WRF PREPROCESSOR"
-
-for emiss in emiss_names:
-    write_var_attributes(wrfchemi, emiss)
+    # Reading local emission file CBMZ/MOSAIC mechanism
+    emiss_names = ['E_CO', 'E_HCHO', 'E_C2H5OH', 'E_KET', 'E_NH3', 'E_XYL', 'E_TOL',
+                  'E_ISO', 'E_OLI', 'E_OLT', 'E_OL2', 'E_HC8', 'E_HC5', 'E_ORA2',
+                  'E_ETH', 'E_ALD', 'E_CSL', 'E_SO2', 'E_HC3', 'E_NO2', 'E_NO',
+                  'E_CH3OH', 'E_PM25I', 'E_PM25J', 'E_SO4I', 'E_SO4J', 'E_NO3I',
+                  'E_NO3J', 'E_ORGI', 'E_ORGJ', 'E_ECI', 'E_ECJ', 'E_SO4C', 
+                  'E_NO3C', 'E_ORGC', 'E_ECC']
+    header_name = ["i", "lon", "lat"] + emiss_names
+    emiss_df = pd.read_csv(emission_file, delim_whitespace=True, names=header_name)
     
-wrfchemi['Times'] = xr.DataArray(
-    date.strftime("%Y-%m-%d_%H:%M:%S").values,
-    dims=['Time'],
-    coords={'Time':date.values}
-    )
-
-wrfchemi.to_netcdf(output_name,
-                   encoding={"Times":{
-                       "char_dim_name": "DateStrLen"
-                       }
-                       },
-                   unlimited_dims={"Time":True})
-
-
-
-print_conservation(wrfchemi, emiss_input, 'E_CO')
-print("Successful completion of AAS4WRF!")
+    
+    # Emission file dimensions
+    n_points = n_lon * n_lat
+    lon1d = emiss_df["lon"][: n_lon].values
+    lat1d = emiss_df["lat"][: n_points: n_lon].values[::-1]
+    date = pd.date_range(start_date + ' 00:00', end_date + ' 23:00', freq='H')
+    
+    
+    # Transforming text into a xarray dataset, a xarray dataset is a group
+    # of xarrya dataarray, a xarray dataarray is N-dimensional array with 
+    # labeled coordinates and dimensions  
+    
+    # We save each emission species xarray in this dataset
+    emiss_input = xr.Dataset()
+    
+    for emi in emiss_names:
+        emiss_input[emi] = create_dataaaray_per_emi(emiss_df, emi, 
+                                                    lat1d, lon1d,
+                                                    date)
+        
+    # Reading wrfinput file
+    wrfinput = xr.open_dataset(wrfinput_file)
+    xlat = wrfinput.XLAT.values
+    xlon = wrfinput.XLONG.values
+    
+    # Creating grids used for regridding
+    wrf_coords = {
+        'lon': xlon[0, 0, :],
+        'lat': xlat[0, :, 0]
+        }
+    
+    emiss_coords = {
+        'lon': emiss_input.lon.values,
+        'lat': emiss_input.lat.values
+        }
+    
+    
+    # Building wrfchemi data set
+    if reggrid_method == 'conservative':
+        wrfchemi = conservative_method(wrf_coords, emiss_coords,
+                                       emiss_input, wrfinput)
+    elif reggrid_method == 'nearest_s2d':
+        wrfchemi = nearest_method(wrf_coords, emiss_coords, emiss_input)
+        
+    
+    # Building wrfchemi netcdf
+    for key, value in wrfinput.attrs.items():
+        wrfchemi.attrs[key] = value
+    
+    wrfchemi['TITLE'] = "OUTPUT FROM AAS4WRF PREPROCESSOR"
+    
+    for emiss in emiss_names:
+        write_var_attributes(wrfchemi, emiss)
+        
+    wrfchemi['Times'] = xr.DataArray(
+        date.strftime("%Y-%m-%d_%H:%M:%S").values,
+        dims=['Time'],
+        coords={'Time':date.values}
+        )
+    
+    wrfchemi.to_netcdf(output_name,
+                       encoding={"Times":{
+                           "char_dim_name": "DateStrLen"
+                           }
+                           },
+                       unlimited_dims={"Time":True})
+    
+    
+    
+    print_conservation(wrfchemi, emiss_input, 'E_CO')
+    print("Successful completion of AAS4WRF!")
