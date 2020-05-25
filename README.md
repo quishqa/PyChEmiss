@@ -66,7 +66,7 @@ This file control some parameters to run the script. No `""` are required to ent
 
 To run the script, type:
 ```
-python aasrwrf.py aas4wrf.cfg
+python aas4wrf.py aas4wrf.cfg
 ```
 
 ### Expected Runtime
