@@ -5,7 +5,9 @@ Currently, It works with CBMZ/MOSAIC chemical mechanism and for surface emission
 
 ## Installation
 
-You need to install the packages that `aas4wrf.py` needs. We recommend to use [anaconda](https://docs.anaconda.com/anaconda/install/) or [miniconda](https://docs.conda.io/en/latest/miniconda.html).
+You need to install the packages that `aas4wrf.py` needs. We recommend to use
+[miniconda](https://docs.conda.io/en/latest/miniconda.html) or
+[anaconda](https://docs.anaconda.com/anaconda/install/)
 
 You can download this repo or clone it by:
 
@@ -36,6 +38,7 @@ Now you can install `espmy`, `xesmf` and `python-cdo`. By doing this, `xarray`,
 conda install esmpy
 conda install xesmf
 conda install python-cdo
+conda install pyyaml
 ```
 
 It's important to first install `esmpy` to avoid [this issue](https://github.com/JiaweiZhuang/xESMF/issues/47#issuecomment-593322288).
@@ -53,12 +56,16 @@ If everything goes well, you are ready to go.
 ## The input data
 To run this script you need the the `wrfinput_d0x` and your temporal and spatial disaggregated emissions. You can see the needed format by exploring `emissions.txt` file.
 
-## Configuration file `aas4wrf.cfg`
-This file control some parameters to run the script. No `""` are required to enter parameter values.
+## Configuration file: `aas4wrf.yml`
+This file control some parameters to run the script. `""` are required only in `sep`.
 * `wrfinput_file`: the location of wrfinput_d0x.
 * `emission_file`: the location of the local emission file.
 * `nx` and `ny`: the number of longitude and latitude points in which local emission were spatially disaggregated.
-* `start_date` and `end_date`: `emissions.txt` temporal availability.
+* `start_date` and `end_date`: `emissions.txt` temporal availability in `%Y-%m-%d %H:%M` format.
+* `header`: If your local emission file has a header.
+* `col_names`: Names of emission file column names. **Remember that the three
+first columns have to be named "i", "lon", and "lat"**.
+* `sep`: Column delimiter in emission file. Use quotes (`""`)
 * `method`: we implement `conservative` and `nearest_s2d` methods for emissions regridding.
 * `output_name` : location and name of produced `wrfchemi` file
 
@@ -66,9 +73,15 @@ This file control some parameters to run the script. No `""` are required to ent
 
 To run the script, type:
 ```
-python aas4wrf.py aas4wrf.cfg
+python aas4wrf.py aas4wrf.yml
 ```
+
+### Output example
+Here there is a comparison between the local emission of CO (with &Delta;X= 9 Km) and the
+output after using `aas4wrf.py` for a WRF domain of &Delta;X = 9 km.
+
+![Alt text](./aas4wrf_example.svg)
 
 ### Expected Runtime
 
-For a WRF domain with 150 x 100 points and for hourly emission for ten days, in a "normal" laptop it took 30 seconds to run.
+For a WRF domain with 150 x 100 points and for hourly emission for ten days (nx =30 and ny=27), in a "normal" laptop, it took 30 seconds to run.
