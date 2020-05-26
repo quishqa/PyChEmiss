@@ -15,9 +15,37 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 import xesmf as xe
-import configparser
 from cdo import Cdo
 
+def read_local_emiss(emission_file, sep, has_header, col_names):
+    '''
+    Read local emission file into a pandas DataFrame
+
+    Parameters
+    ----------
+    emission_file : str
+        Path of local emission_file.
+    sep : str
+        Delimiter of emission_file columns.
+    header : Bool
+        Does the file have a header.
+    col_names : List
+        List with emission_file columns.
+
+    Returns
+    -------
+    emiss_df : pandas DataFrame
+        Local emissions as Pandas DataFrame.
+
+    '''
+    if has_header:
+        emiss_df = pd.read_csv(emission_file, 
+                               delimiter=sep)
+    else:
+        emiss_df = pd.read_csv(emission_file,
+                               delimiter=sep,
+                               names=col_names)
+    return emiss_df
 
 
 def create_dataaaray_per_emi(emiss_df, pol, lat, lon, date):
@@ -225,52 +253,53 @@ def print_conservation(wrfchemi, emiss_input, pol):
     None.
 
     '''
-    diff = (wrfchemi[pol].sum() / emiss_input[pol].sum()) * 100
-    print("{} is conserved: {:.2f}%".format(pol, diff.values))
+    diff = ((wrfchemi[pol].sum() -  emiss_input[pol].sum()) /
+             emiss_input[pol].sum() * 100)
+    print("Difference between {} reggrided and original emission is: {:.2f}%"
+          .format(pol, diff.values))
 
 
 
 if __name__ == '__main__':
     import sys
+    import yaml
     if len(sys.argv) < 2:
         print('usage: python {} aasf4wrf.cfg'.format(sys.argv[0]))
         sys.exit()
         
     # Retrieving parameters from config file
-    config_file = sys.argv[1]
-    config = configparser.ConfigParser()
-    config.read(config_file)
+    with open('aas4wrf.yml') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+        
+    wrfinput_file = config['Input']['wrfinput_file']
+    emission_file = config['Input']['emission_file']
     
+    n_lon = config['Emissions']['nx']
+    n_lat = config['Emissions']['ny']
+    start_date = config['Emissions']['start_date']
+    end_date = config['Emissions']['end_date']
+    has_header = config['Emissions']['header']
+    sep = config['Emissions']['sep']
+    col_names = config['Emissions']['col_names']
     
-    wrfinput_file = config["Input"]["wrfinput_file"]
-    emission_file = config["Input"]["emission_file"]
+    reggrid_method = config["Reggriding"]["method"]
     
-    n_lon = config.getint("Emission file", "nx")
-    n_lat = config.getint("Emission file", "ny")
-    start_date = config["Time Control"]["start_date"]
-    end_date = config["Time Control"]["end_date"]
-    
-    reggrid_method = config['Reggriding']['method']
-    output_name = config["Output Style"]["output_name"]
+    output_name = config["Output"]["output_name"]
     
 
 
     # Reading local emission file CBMZ/MOSAIC mechanism
-    emiss_names = ['E_CO', 'E_HCHO', 'E_C2H5OH', 'E_KET', 'E_NH3', 'E_XYL', 'E_TOL',
-                  'E_ISO', 'E_OLI', 'E_OLT', 'E_OL2', 'E_HC8', 'E_HC5', 'E_ORA2',
-                  'E_ETH', 'E_ALD', 'E_CSL', 'E_SO2', 'E_HC3', 'E_NO2', 'E_NO',
-                  'E_CH3OH', 'E_PM25I', 'E_PM25J', 'E_SO4I', 'E_SO4J', 'E_NO3I',
-                  'E_NO3J', 'E_ORGI', 'E_ORGJ', 'E_ECI', 'E_ECJ', 'E_SO4C', 
-                  'E_NO3C', 'E_ORGC', 'E_ECC']
-    header_name = ["i", "lon", "lat"] + emiss_names
-    emiss_df = pd.read_csv(emission_file, delim_whitespace=True, names=header_name)
+    emiss_df = read_local_emiss(emission_file, sep, has_header, 
+                                col_names)
+    # Getting emitted species names
+    emiss_names = col_names[3:]
     
     
     # Emission file dimensions
     n_points = n_lon * n_lat
     lon1d = emiss_df["lon"][: n_lon].values
     lat1d = emiss_df["lat"][: n_points: n_lon].values[::-1]
-    date = pd.date_range(start_date + ' 00:00', end_date + ' 23:00', freq='H')
+    date = pd.date_range(start_date, end_date, freq='H')
     
     
     # Transforming text into a xarray dataset, a xarray dataset is a group

@@ -1,0 +1,54 @@
+Input:
+  wrfinput_file: ./wrfinput_d01
+  emission_file: ./emissions.txt
+Emissions:
+  nx: 10
+  ny: 9
+  start_date: 2018-06-21 00:00
+  end_date: 2018-06-30 23:00
+  header: False
+  sep: "\t"
+  col_names:
+  - i
+  - lon
+  - lat
+  - E_CO
+  - E_SO2
+  - E_NO
+  - E_NO2
+  - E_NH3
+  - E_ALD
+  - E_HCHO
+  - E_ORA2
+  - E_HC3
+  - E_HC5
+  - E_HC8
+  - E_ETH
+  - E_OL2
+  - E_OLT
+  - E_OLI
+  - E_TOL
+  - E_XYL
+  - E_KET
+  - E_CSL
+  - E_ISO
+  - E_CH3OH
+  - E_C2H5OH
+  - E_PM25I
+  - E_PM25J
+  - E_SO4I
+  - E_SO4J
+  - E_NO3I
+  - E_NO3J
+  - E_ORGI
+  - E_ORGJ
+  - E_ECI
+  - E_ECJ
+  - E_SO4C
+  - E_NO3C
+  - E_ORGC
+  - E_ECC
+Reggriding:
+  method: conservative
+Output:
+  output_name: wrfchemi_d01_aas4wrf
