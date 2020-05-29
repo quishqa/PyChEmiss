@@ -264,11 +264,13 @@ if __name__ == '__main__':
     import sys
     import yaml
     if len(sys.argv) < 2:
-        print('usage: python {} aasf4wrf.cfg'.format(sys.argv[0]))
+        print('usage: python {} aasf4wrf.yml'.format(sys.argv[0]))
         sys.exit()
+
+    config_file = sys.argv[1]
         
     # Retrieving parameters from config file
-    with open('aas4wrf.yml') as file:
+    with open(config_file) as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
         
     wrfinput_file = config['Input']['wrfinput_file']
