@@ -124,6 +124,57 @@ def cell_bound(coord):
     coord_b_final = np.append(coord_b_final, coord_f)
     return coord_b_final
 
+def total_emiss_emiss_input(emiss_input, pol, molecular_mass, emiss_area):
+    '''
+    Calculate total emission in KTn of emiss_input domain
+
+    Parameters
+    ----------
+    emiss_input : xarray Dataset
+        It contains local emissions pollutants xarray Dataarrays.
+    pol : str
+        Name of emitted pollutant.
+    molecular_mass : float
+        Emitted pollutant molecular mass.
+    emiss_area : xarray DataArray
+        Cell grid area in m^2.
+
+    Returns
+    -------
+    total_pol : float
+        Total emitted pollutant in KTn.
+
+    '''
+    emiss_pol = emiss_input[pol]
+    total_pol = ((emiss_pol * emiss_area / 10**6).sum() * 
+                 molecular_mass / 10**9)
+    return total_pol
+    
+def total_emiss_wrfchemi(wrfchemi, pol, molecular_mass, wrfinput):
+    '''
+    Calculates total emission of regridded local emissions in kTon
+
+    Parameters
+    ----------
+    wrfchmei : xarray Dataset
+        Local emissions conservative reggrided in wrfinput grid.
+    pol : str
+        Name of emitted pollutant.
+    molecular_mass : float
+        Emitted pollutant molecular mass.
+    wrfinput : xarray Dataset
+        WRF wrfinput file.
+
+    Returns
+    -------
+    total_wrf_pol : TYPE
+        Total emitted pollutant in KTn.
+
+    '''
+    wrf_cell_area_km = wrfinput.DX *wrfinput.DY / 10**6
+    wrf_pol = wrfchemi[pol]
+    total_wrf_pol = (wrf_pol * wrf_cell_area_km).sum() * molecular_mass / 10**9
+    return total_wrf_pol
 
 
 def conservative_method(wrf_coords, emiss_coords, emiss_input, wrfinput):
@@ -167,12 +218,57 @@ def conservative_method(wrf_coords, emiss_coords, emiss_input, wrfinput):
     cdo = Cdo()
     cdo.gridarea(input="emiss_input.nc", output="emiss_input_area.nc")
     emiss_area = xr.open_dataarray("emiss_input_area.nc")
-    emiss_input_a = emiss_input/ emiss_area
+    # Transforming to mol/hr
+    emiss_input_a = emiss_input * (emiss_area / 10**6)
     
+    # Conservative regridding
     wrfchemi_a = regridder(emiss_input_a)
-    wrf_cell_area = wrfinput.DX * wrfinput.DY
+    wrf_cell_area = wrfinput.DX * wrfinput.DY / 10**6
     
-    wrfchemi = wrfchemi_a * wrf_cell_area     
+    # Transforming to mol/km2/hr
+    wrfchemi = wrfchemi_a / wrf_cell_area
+    
+    
+    # Calculating CO, NO and NO2 total emiss to check conservation
+    emiss_co = total_emiss_emiss_input(emiss_input, 
+                                       'E_CO',
+                                       28,
+                                       emiss_area)
+    emiss_no = total_emiss_emiss_input(emiss_input, 
+                                       'E_NO',
+                                       30,
+                                       emiss_area)
+    emiss_no2 = total_emiss_emiss_input(emiss_input, 
+                                       'E_NO2',
+                                       46,
+                                       emiss_area)
+    
+    emiss_co_wrf = total_emiss_wrfchemi(wrfchemi,
+                                        'E_CO',
+                                        28,
+                                        wrfinput)
+    emiss_no_wrf = total_emiss_wrfchemi(wrfchemi,
+                                        'E_NO',
+                                        30,
+                                        wrfinput)
+    emiss_no2_wrf = total_emiss_wrfchemi(wrfchemi,
+                                         'E_NO2',
+                                         46,
+                                         wrfinput)
+    
+    
+    print("Total CO emission = {:.2f} kTn".format(emiss_co.values))
+    print("Total CO emission after regridding = {:.2f} kTn "
+          .format(emiss_co_wrf.values))
+    
+    print("Total NO emission = {:.2f} kTn".format(emiss_no.values))
+    print("Total NO emission after regridding = {:.2f} kTn "
+          .format(emiss_no_wrf.values))
+
+    print("Total NO2 emission = {:.2f} kTn".format(emiss_no2.values))
+    print("Total NO2 emission after regridding = {:.2f} kTn "
+          .format(emiss_no2_wrf.values))
+
     
     regridder.clean_weight_file()
     os.remove("emiss_input.nc")
@@ -235,29 +331,6 @@ def write_var_attributes(wrfchemi, pol):
     wrfchemi[pol].attrs['stagger'] = ''
     wrfchemi[pol].attrs['coordinates'] = 'XLONG XLAT'
     
-def print_conservation(wrfchemi, emiss_input, pol):
-    '''
-    Print how much is conserved after regridding
-
-    Parameters
-    ----------
-    wrfchemi : xarray Dataset
-        Local emissions reggrided in wrfinput grid.
-    emiss_input : xarray Dataset
-        Local emissions from emission_file.
-    pol : string
-        Name of emitted pollutant.
-
-    Returns
-    -------
-    None.
-
-    '''
-    diff = ((wrfchemi[pol].sum() -  emiss_input[pol].sum()) /
-             emiss_input[pol].sum() * 100)
-    print("Difference between {} reggrided and original emission is: {:.2f}%"
-          .format(pol, diff.values))
-
 
 
 if __name__ == '__main__':
@@ -365,5 +438,4 @@ if __name__ == '__main__':
     
     
     
-    print_conservation(wrfchemi, emiss_input, 'E_CO')
     print("Successful completion of AAS4WRF!")
