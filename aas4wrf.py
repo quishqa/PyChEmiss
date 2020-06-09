@@ -218,16 +218,11 @@ def conservative_method(wrf_coords, emiss_coords, emiss_input, wrfinput):
     cdo = Cdo()
     cdo.gridarea(input="emiss_input.nc", output="emiss_input_area.nc")
     emiss_area = xr.open_dataarray("emiss_input_area.nc")
-    # Transforming to mol/hr
-    emiss_input_a = emiss_input * (emiss_area / 10**6)
     
+        
     # Conservative regridding
-    wrfchemi_a = regridder(emiss_input_a)
-    wrf_cell_area = wrfinput.DX * wrfinput.DY / 10**6
-    
-    # Transforming to mol/km2/hr
-    wrfchemi = wrfchemi_a / wrf_cell_area
-    
+    wrfchemi = regridder(emiss_input) 
+     
     
     # Calculating CO, NO and NO2 total emiss to check conservation
     emiss_co = total_emiss_emiss_input(emiss_input, 
@@ -256,16 +251,16 @@ def conservative_method(wrf_coords, emiss_coords, emiss_input, wrfinput):
                                          46,
                                          wrfinput)
     
-    
+    print("----------INPUT TOTAL EMISSIONS----------")
     print("Total CO emission = {:.2f} kTn".format(emiss_co.values))
+    print("Total NO emission = {:.2f} kTn".format(emiss_no.values))
+    print("Total NO2 emission = {:.2f} kTn".format(emiss_no2.values))
+    
+    print("----------AFTER REGRIDDING TOTAL EMISSION----------")
     print("Total CO emission after regridding = {:.2f} kTn "
           .format(emiss_co_wrf.values))
-    
-    print("Total NO emission = {:.2f} kTn".format(emiss_no.values))
     print("Total NO emission after regridding = {:.2f} kTn "
-          .format(emiss_no_wrf.values))
-
-    print("Total NO2 emission = {:.2f} kTn".format(emiss_no2.values))
+          .format(emiss_no_wrf.values))    
     print("Total NO2 emission after regridding = {:.2f} kTn "
           .format(emiss_no2_wrf.values))
 

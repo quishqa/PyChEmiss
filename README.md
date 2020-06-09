@@ -54,7 +54,7 @@ conda install --yes --file requirements.txt
 If everything goes well, you are ready to go.
 
 ## The input data
-To run this script you need the the `wrfinput_d0x` and your temporal and spatial disaggregated emissions. You can see the needed format by exploring `emissions.txt` file.
+To run this script you need the `wrfinput_d0x` and your temporal and spatial disaggregated emissions in **mol/km2/hr**. You can see the needed format by exploring `emissions.txt` file.
 
 ## Configuration file: `aas4wrf.yml`
 This file control some parameters to run the script. `""` are required only in `sep`.
