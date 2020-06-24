@@ -293,8 +293,60 @@ def nearest_method(wrf_coords, emiss_coords, emiss_input):
     '''
     
     regridder = xe.Regridder(emiss_coords, wrf_coords, method = 'nearest_s2d')
+    
+    # We perform nearest reggriding
     wrfchemi = regridder(emiss_input)
+    
+    # We calculate the area using CDO
+    emiss_input.to_netcdf("emiss_input.nc")
+    cdo = Cdo()
+    cdo.gridarea(input="emiss_input.nc", output="emiss_input_area.nc")
+    emiss_area = xr.open_dataarray("emiss_input_area.nc")
+    
+    # Calculating CO, NO and NO2 total emiss to check conservation
+    emiss_co = total_emiss_emiss_input(emiss_input, 
+                                       'E_CO',
+                                       28,
+                                       emiss_area)
+    emiss_no = total_emiss_emiss_input(emiss_input, 
+                                       'E_NO',
+                                       30,
+                                       emiss_area)
+    emiss_no2 = total_emiss_emiss_input(emiss_input, 
+                                       'E_NO2',
+                                       46,
+                                       emiss_area)
+    
+    emiss_co_wrf = total_emiss_wrfchemi(wrfchemi,
+                                        'E_CO',
+                                        28,
+                                        wrfinput)
+    emiss_no_wrf = total_emiss_wrfchemi(wrfchemi,
+                                        'E_NO',
+                                        30,
+                                        wrfinput)
+    emiss_no2_wrf = total_emiss_wrfchemi(wrfchemi,
+                                         'E_NO2',
+                                         46,
+                                         wrfinput)
+    
+    print("----------INPUT TOTAL EMISSIONS----------")
+    print("Total CO emission = {:.2f} kTn".format(emiss_co.values))
+    print("Total NO emission = {:.2f} kTn".format(emiss_no.values))
+    print("Total NO2 emission = {:.2f} kTn".format(emiss_no2.values))
+    
+    print("----------AFTER REGRIDDING TOTAL EMISSION----------")
+    print("Total CO emission after regridding = {:.2f} kTn "
+          .format(emiss_co_wrf.values))
+    print("Total NO emission after regridding = {:.2f} kTn "
+          .format(emiss_no_wrf.values))    
+    print("Total NO2 emission after regridding = {:.2f} kTn "
+          .format(emiss_no2_wrf.values))
+
+    
     regridder.clean_weight_file()
+    os.remove("emiss_input.nc")
+    os.remove("emiss_input_area.nc")
     return wrfchemi
 
 

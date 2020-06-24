@@ -49,6 +49,6 @@ Emissions:
   - E_ORGC
   - E_ECC
 Reggriding:
-  method: conservative
+  method: nearest_s2d 
 Output:
   output_name: wrfchemi_d01_aas4wrf
