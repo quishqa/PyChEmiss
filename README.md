@@ -61,12 +61,14 @@ This file control some parameters to run the script. `""` are required only in `
 * `wrfinput_file`: the location of wrfinput_d0x.
 * `emission_file`: the location of the local emission file.
 * `nx` and `ny`: the number of longitude and latitude points in which local emission were spatially disaggregated.
+* `cell_area`: cell area in km<sup>2</sup> of input `emission_file`.
 * `start_date` and `end_date`: `emissions.txt` temporal availability in `%Y-%m-%d %H:%M` format.
 * `header`: If your local emission file has a header.
 * `col_names`: Names of emission file column names. **Remember that the three
 first columns have to be named "i", "lon", and "lat"**.
 * `sep`: Column delimiter in emission file. Use quotes (`""`)
-* `method`: we implement `conservative` and `nearest_s2d` methods for emissions regridding.
+* `method`: we implement `nearest_s2d` methods for emissions regridding
+(a conservative method is on the way!).
 * `output_name` : location and name of produced `wrfchemi` file
 
 ## Usage
@@ -77,11 +79,11 @@ python aas4wrf.py aas4wrf.yml
 ```
 
 ### Output example
-Here there is a comparison between the local emission of CO (with &Delta;X= 9 Km) and the
-output after using `aas4wrf.py` for a WRF domain of &Delta;X = 9 km.
+Here there is a comparison between the local emission of CO (with &Delta;X= 3 Km) and the
+output after using `aas4wrf.py` for a WRF domain of &Delta;X = 3 km.
 
 ![Alt text](./aas4wrf_example.svg)
 
 ### Expected Runtime
 
-For a WRF domain with 150 x 100 points and for hourly emission for ten days (nx =30 and ny=27), in a "normal" laptop, it took 30 seconds to run.
+For a WRF domain with 150 x 100 points and for hourly emission for ten days (nx =30 and ny=27, like the above figure), in a "normal" laptop, it took 30 seconds to run.

@@ -4,6 +4,7 @@ Input:
 Emissions:
   nx: 10
   ny: 9
+  cell_area: 81
   start_date: 2018-06-21 00:00
   end_date: 2018-06-30 23:00
   header: False
