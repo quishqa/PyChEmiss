@@ -37,7 +37,6 @@ Now you can install `espmy`, `xesmf` and `python-cdo`. By doing this, `xarray`,
 ```
 conda install esmpy
 conda install xesmf
-conda install python-cdo
 conda install pyyaml
 ```
 
