@@ -31,8 +31,8 @@ conda activate aas4wrf
 
 ### Option A
 
-Now you can install `espmy`, `xesmf` and `python-cdo`. By doing this, `xarray`,
-`numpy`,  `pandas`, and `cdo` will be also installed:
+Now you can install `espmy`, `xesmf` and `pyyaml`. By doing this, `xarray`,
+`numpy`,  and `pandas`will be also installed:
 
 ```
 conda install esmpy
