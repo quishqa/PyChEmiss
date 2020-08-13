@@ -21,7 +21,7 @@ Then add `conda-forge` channel by:
 conda config --add channels conda-forge
 ```
 
-To avoid conflicts during the Installation, we also recommend create a new environment to run `aas4wrf.py`:
+To avoid conflicts during the installation, we also recommend create a new environment to run `aas4wrf.py`:
 
 ```
 conda create --name aas4wrf
@@ -85,4 +85,4 @@ output after using `aas4wrf.py` for a WRF domain of &Delta;X = 3 km.
 
 ### Expected Runtime
 
-For a WRF domain with 150 x 100 points and for hourly emission for ten days (nx =30 and ny=27, like the above figure), in a "normal" laptop, it took 30 seconds to run.
+For a WRF domain with 150 x 100 points and for ten days with hourly emissions  (nx =30 and ny=27, like the above figure), in a "normal" laptop, it took 30 seconds to run.
