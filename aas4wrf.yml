@@ -1,10 +1,10 @@
 Input:
-  wrfinput_file: ./wrfinput_d01
-  emission_file: ./emissions.txt
+  wrfinput_file: ./wrfinput_d02
+  emission_file: ./emissions_3km.txt
 Emissions:
-  nx: 10
-  ny: 9
-  cell_area: 81
+  nx: 30
+  ny: 27
+  cell_area: 9
   start_date: 2018-06-21 00:00
   end_date: 2018-06-30 23:00
   header: False
@@ -52,4 +52,4 @@ Emissions:
 Reggriding:
   method: nearest_s2d 
 Output:
-  output_name: wrfchemi_d01_aas4wrf
+  output_name: wrfchemi_d02_aas4wrf
