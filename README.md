@@ -56,7 +56,7 @@ If everything goes well, you are ready to go.
 To run this script you need the `wrfinput_d0x` and your temporal and spatial disaggregated emissions in **mol/km2/hr**. You can see the needed format by exploring `emissions.txt` file.
 
 ## Configuration file: `aas4wrf.yml`
-This file control some parameters to run the script. `""` are required only in `sep`.
+This file controls some parameters to run the script. `""` are required only in `sep`.
 * `wrfinput_file`: the location of wrfinput_d0x.
 * `emission_file`: the location of the local emission file.
 * `nx` and `ny`: the number of longitude and latitude points in which local emission were spatially disaggregated.
@@ -68,7 +68,7 @@ first columns have to be named "i", "lon", and "lat"**.
 * `sep`: Column delimiter in emission file. Use quotes (`""`)
 * `method`: we implement `nearest_s2d` methods for emissions regridding
 (a conservative method is on the way!).
-* `output_name` : location and name of produced `wrfchemi` file
+* `output_name` : location and name of produced `wrfchemi` file (`wrfchemi_d02_aas4wrf`)
 
 ## Usage
 
@@ -77,9 +77,9 @@ To run the script, type:
 python aas4wrf.py aas4wrf.yml
 ```
 
-To check that everithing is working properly up to this point, we recommend the user visualize the content of the output file, for example, by using `ncview`
+To check that everything is working properly up to this point, we recommend to visualize the content of the output file, for example, by using `ncview`
 ```
-ncview wrfchemi
+ncview wrfchemi_d02_aas4wrf
 ```
 
 ### Output example
@@ -91,3 +91,21 @@ output after using `aas4wrf.py` for a WRF domain of &Delta;X = 3 km.
 ### Expected Runtime
 
 For a WRF domain with 150 x 100 points and for ten days with hourly emissions  (nx =30 and ny=27, like the above figure), in a "normal" laptop, it took 30 seconds to run.
+
+### WRF-Chem namelist configuration
+
+To use the `wrfchemi` file in a standard WRF-Chem simulation, change its name from `wrfchemi_d02_aas4wrf` to `wrfchemi_d<domain>_<date>` (`wrfchemi_d01_2018-06-21_00:00:00` in this example) and set some control parameters in the `namelist.input` file as follows
+```
+&time_control
+io_form_auxinput5                   = 2,
+auxinput5_inname                    = 'wrfchemi_d<domain>',
+auxinput5_interval_m                = 60,
+frames_per_auxinput5                = 240,
+/
+
+&chem
+io_style_emissions                  = 2,
+/
+```
+
+240 is the number of times in the `wrfchemi` file. 
