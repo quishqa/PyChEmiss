@@ -77,6 +77,11 @@ To run the script, type:
 python aas4wrf.py aas4wrf.yml
 ```
 
+To check that everithing is working properly up to this point, we recommend the user visualize the content of the output file, for example, by using `ncview`
+```
+ncview wrfchemi
+```
+
 ### Output example
 Here there is a comparison between the local emission of CO (with &Delta;X= 3 Km) and the
 output after using `aas4wrf.py` for a WRF domain of &Delta;X = 3 km.
