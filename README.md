@@ -1,18 +1,18 @@
-# aas4wrf.py
+# PyChEmiss
 
-`aas4wrf.py` is a Python script to create the `wrfchemi` file from local emissions needed to run WRF-Chem model. It's based on his older broder [AAS4WRF.ncl](https://github.com/alvv1986/AAS4WRF).
-Currently, It works with CBMZ/MOSAIC chemical mechanism and for surface emissions.
+`PyChEmiss` is a Python script to create the `wrfchemi` file from local emissions needed to run WRF-Chem model. It's based on his older broder [AAS4WRF.ncl](https://github.com/alvv1986/AAS4WRF).
+Currently, It is set up to work with CBMZ/MOSAIC chemical mechanism and for surface emissions.
 
 ## Installation
 
-You need to install the packages that `aas4wrf.py` needs. We recommend to use
+You need to install the packages that `PyChEmiss` needs. We recommend to use
 [miniconda](https://docs.conda.io/en/latest/miniconda.html) or
 [anaconda](https://docs.anaconda.com/anaconda/install/)
 
 You can download this repo or clone it by:
 
 ```
-git clone https://github.com/quishqa/AAS4WRF.py.git
+git clone https://github.com/quishqa/PyChEmiss.git
 ```
 
 Then add `conda-forge` channel by:
@@ -21,11 +21,11 @@ Then add `conda-forge` channel by:
 conda config --add channels conda-forge
 ```
 
-To avoid conflicts during the installation, we also recommend create a new environment to run `aas4wrf.py`:
+To avoid conflicts during the installation, we also recommend create a new environment to run `PyChEmiss`:
 
 ```
-conda create --name aas4wrf
-conda activate aas4wrf
+conda create --name PyChEmiss
+conda activate PyChEmiss
 ```
 
 
@@ -55,7 +55,7 @@ If everything goes well, you are ready to go.
 ## The input data
 To run this script you need the `wrfinput_d0x` and your temporal and spatial disaggregated emissions in **mol/km2/hr**. You can see the needed format by exploring `emissions.txt` file.
 
-## Configuration file: `aas4wrf.yml`
+## Configuration file: `pychemiss.yml`
 This file controls some parameters to run the script. `""` are required only in `sep`.
 * `wrfinput_file`: the location of wrfinput_d0x.
 * `emission_file`: the location of the local emission file.
@@ -74,27 +74,17 @@ first columns have to be named "i", "lon", and "lat"**.
 
 To run the script, type:
 ```
-python aas4wrf.py aas4wrf.yml
+python pychemiss.py pychemiss.yml
 ```
 
 To check that everything is working properly up to this point, we recommend to visualize the content of the output file, for example, by using `ncview`
 ```
-ncview wrfchemi_d02_aas4wrf
+ncview wrfchemi_d02_pychemiss
 ```
-
-### Output example
-Here there is a comparison between the local emission of CO (with &Delta;X= 3 Km) and the
-output after using `aas4wrf.py` for a WRF domain of &Delta;X = 3 km.
-
-![Alt text](./aas4wrf_example.svg)
-
-### Expected Runtime
-
-For a WRF domain with 150 x 100 points and for ten days with hourly emissions  (nx =30 and ny=27, like the above figure), in a "normal" laptop, it took 30 seconds to run.
 
 ### WRF-Chem namelist configuration
 
-To use the `wrfchemi` file in a standard WRF-Chem simulation, change its name from `wrfchemi_d02_aas4wrf` to `wrfchemi_d<domain>_<date>` (`wrfchemi_d01_2018-06-21_00:00:00` in this example) and set some control parameters in the `namelist.input` file as follows
+To use the `wrfchemi` file in a standard WRF-Chem simulation, change its name from `wrfchemi_d02_pychemiss` to `wrfchemi_d<domain>_<date>` (`wrfchemi_d01_2018-06-21_00:00:00` in this example) and set some control parameters in the `namelist.input` file as follows
 ```
 &time_control
 io_form_auxinput5                   = 2,
@@ -108,4 +98,14 @@ io_style_emissions                  = 2,
 /
 ```
 
-240 is the number of times in the `wrfchemi` file. 
+240 is the number of times in the `wrfchemi` file.
+
+### Output example
+Here there is a comparison between the local emission of CO (with &Delta;X= 3 Km) and the
+output after using `pychemiss.py` for a WRF domain of &Delta;X = 3 km.
+
+![Alt text](./pychemiss_example.svg)
+
+### Expected Runtime
+
+For a WRF domain with 150 x 100 points and for ten days with hourly emissions  (nx =30 and ny=27, like the above figure), in a "normal" laptop, it took 30 seconds to run.
