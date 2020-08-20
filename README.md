@@ -53,7 +53,13 @@ conda install --yes --file requirements.txt
 If everything goes well, you are ready to go.
 
 ## The input data
-To run this script you need the `wrfinput_d0x` and your temporal and spatial disaggregated emissions in **mol/km2/hr**. You can see the needed format by exploring `emissions.txt` file.
+To run this script you need the `wrfinput_d0x` and your temporal and spatial disaggregated emissions in **mol/km2/hr**. You can see the needed format by exploring `emissions_3km.txt` file.
+
+To untar the example files:
+```
+tar -zxvf emissions_3km.tar.gz
+tar -zxvf wrfinput_d02.tar.gz
+```
 
 ## Configuration file: `pychemiss.yml`
 This file controls some parameters to run the script. `""` are required only in `sep`.
