@@ -53,7 +53,7 @@ conda install --yes --file requirements.txt
 If everything goes well, you are ready to go.
 
 ## The input data
-To run this script you need the `wrfinput_d0x` and your temporal and spatial disaggregated emissions in **mol/km2/hr**. You can see the needed format by exploring `emissions_3km.txt` file.
+To run this script you need the `wrfinput_d0x` and your temporal and spatial disaggregated emissions in **mol/km<sup>2</sup>/hr**. You can see the needed format by exploring `emissions_3km.txt` file.
 
 To untar the example files:
 ```
@@ -67,14 +67,14 @@ This file controls some parameters to run the script. `""` are required only in 
 * `emission_file`: the location of the local emission file.
 * `nx` and `ny`: the number of longitude and latitude points in which local emission were spatially disaggregated.
 * `cell_area`: cell area in km<sup>2</sup> of input `emission_file`.
-* `start_date` and `end_date`: `emissions.txt` temporal availability in `%Y-%m-%d %H:%M` format.
+* `start_date` and `end_date`: `emissions_3km.txt` temporal availability in `%Y-%m-%d %H:%M` format.
 * `header`: If your local emission file has a header.
 * `col_names`: Names of emission file column names. **Remember that the three
 first columns have to be named "i", "lon", and "lat"**.
 * `sep`: Column delimiter in emission file. Use quotes (`""`)
 * `method`: we implement `nearest_s2d` methods for emissions regridding
 (a conservative method is on the way!).
-* `output_name` : location and name of produced `wrfchemi` file (`wrfchemi_d02_aas4wrf`)
+* `output_name` : location and name of produced `wrfchemi` file (`wrfchemi_d02_pychemiss`)
 
 ## Usage
 
