@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-aas4wrf.py: Another Assimilation System for WRF-Chem python flavored.
+PyChEmiss: A python emissions preprocessor for WRF-Chem regional modelling 
 
-A mass conserving preprocessor to create wrfchemi file from 
+A preprocessor to create wrfchemi file from 
 local emission information. It is based on his older brother AAS4WRF.ncl 
 (https://github.com/alvv1986/AAS4WRF/blob/master/AGU2017_Poster.pdf)
 
