@@ -330,13 +330,30 @@ if __name__ == '__main__':
     # Building wrfchemi netcdf
     wrfchemi = wrfchemi_to_netcdf(wrfchemi, wrfinput, date, emiss_names)
     
-    wrfchemi.to_netcdf(output_name,
-                       encoding={"Times":{
-                           "char_dim_name": "DateStrLen"
-                           }
-                           },
-                       unlimited_dims={"Time":True})
+    if len(date) == 24:
+        wrfchemi00z = wrfchemi.isel(Time=slice(0, 12))
+        wrfchemi12z = wrfchemi.isel(Time=slice(12, 24))
+        wrfchemi00z.to_netcdf("wrfchemi_00z",
+                               encoding={"Times":{
+                                   "char_dim_name": "DateStrLen"
+                                   }
+                                   },
+                               unlimited_dims={"Time":True})
+        wrfchemi12z.to_netcdf("wrfchemi_12z",
+                               encoding={"Times":{
+                                   "char_dim_name": "DateStrLen"
+                                   }
+                                   },
+                               unlimited_dims={"Time":True})
+
+    else:
+        wrfchemi.to_netcdf(output_name,
+                           encoding={"Times":{
+                               "char_dim_name": "DateStrLen"
+                               }
+                               },
+                           unlimited_dims={"Time":True})
     
     
     
-    print("Successful completion of AAS4WRF!")
+    print("Successful completion of PyChEmiss!")
