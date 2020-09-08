@@ -268,7 +268,7 @@ if __name__ == '__main__':
     import sys
     import yaml
     if len(sys.argv) < 2:
-        print('usage: python {} aasf4wrf.yml'.format(sys.argv[0]))
+        print('usage: python {} pychemiss.yml'.format(sys.argv[0]))
         sys.exit()
 
     config_file = sys.argv[1]
