@@ -3,8 +3,8 @@
 """
 PyChEmiss: A python emissions preprocessor for WRF-Chem regional modelling 
 
-A preprocessor to create wrfchemi file from 
-local emission information. It is based on his older brother AAS4WRF.ncl 
+A preprocessor to create wrfchemi file from local emission information.
+It is based on his older brother AAS4WRF.ncl 
 (https://github.com/alvv1986/AAS4WRF/blob/master/AGU2017_Poster.pdf)
 
 
@@ -17,7 +17,7 @@ import xesmf as xe
 
 def read_local_emiss(emission_file, sep, has_header, col_names):
     '''
-    Read local emission file into a pandas DataFrame
+    Read local emission file into a pandas DataFrame.
 
     Parameters
     ----------
@@ -26,7 +26,7 @@ def read_local_emiss(emission_file, sep, has_header, col_names):
     sep : str
         Delimiter of emission_file columns.
     header : Bool
-        Does the file have a header.
+        Does the file have a header?.
     col_names : List
         List with emission_file columns.
 
@@ -83,22 +83,22 @@ def create_dataset_per_emiss(emiss_df, emi, lat1d, lon1d, date):
     
 def total_emiss_wrfchemi(wrfchemi, pol, molecular_mass, wrfinput):
     '''
-    Calculates total emission of regridded local emissions in kTon
+    Calculates total emission of regridded local emissions in kTn.
 
     Parameters
     ----------
     wrfchmei : xarray Dataset
-        Local emissions conservative reggrided in wrfinput grid.
+        Local emissions reggrided in wrfinput grid.
     pol : str
         Name of emitted pollutant.
     molecular_mass : float
         Emitted pollutant molecular mass.
     wrfinput : xarray Dataset
-        WRF wrfinput file.
+        WRF-Chem wrfinput file.
 
     Returns
     -------
-    total_wrf_pol : TYPE
+    total_wrf_pol : float
         Total emitted pollutant in KTn.
 
     '''
@@ -110,7 +110,7 @@ def total_emiss_wrfchemi(wrfchemi, pol, molecular_mass, wrfinput):
 
 def total_emiss_emiss_input(emiss_input, pol, molecular_mass, cell_area):
     '''
-    Calculates total emission of emiss_input dataset
+    Calculates total emission of emiss_input dataset.
 
     Parameters
     ----------
@@ -135,7 +135,7 @@ def total_emiss_emiss_input(emiss_input, pol, molecular_mass, cell_area):
 
 def nearest_method(wrfinput, emiss_input, date, cell_area):
     '''
-    Perform nearest value regridding
+    Perform nearest value regridding.
 
     Parameters
     ----------
@@ -210,7 +210,7 @@ def nearest_method(wrfinput, emiss_input, date, cell_area):
 
 def wrfchemi_to_netcdf(wrfchemi,wrfinput, date, emiss_names):
     '''
-    Prepared wrfchemi dataset to be exported to netcdf
+    Prepared wrfchemi dataset to be exported to netcdf.
 
     Parameters
     ----------
@@ -247,7 +247,7 @@ def wrfchemi_to_netcdf(wrfchemi,wrfinput, date, emiss_names):
         wrfchemi.attrs[key] = value
     
     # Adding a TITLE
-    wrfchemi['TITLE'] = "OUTPUT FROM AAS4WRF PREPROCESSOR"
+    wrfchemi['TITLE'] = "OUTPUT FROM PYCHEMISS PREPROCESSOR"
     
      
     # Adding attributes to emitted species variables
@@ -295,7 +295,7 @@ if __name__ == '__main__':
     
 
 
-    # Reading local emission file CBMZ/MOSAIC mechanism
+    # Reading local emission file 
     emiss_df = read_local_emiss(emission_file, sep, has_header, 
                                 col_names)
     # Getting emitted species names
@@ -330,6 +330,7 @@ if __name__ == '__main__':
     # Building wrfchemi netcdf
     wrfchemi = wrfchemi_to_netcdf(wrfchemi, wrfinput, date, emiss_names)
     
+    # Writting wrfchemi netcdf
     if len(date) == 24:
         wrfchemi00z = wrfchemi.isel(Time=slice(0, 12))
         wrfchemi12z = wrfchemi.isel(Time=slice(12, 24))
