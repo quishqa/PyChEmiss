@@ -1,7 +1,7 @@
 # PyChEmiss
 
 `PyChEmiss` is a Python script to create the `wrfchemi` file from local emissions needed to run WRF-Chem model. It's based on his older broder [AAS4WRF.ncl](https://github.com/alvv1986/AAS4WRF).
-Currently, It is set up to work with CBMZ/MOSAIC chemical mechanism and for surface emissions.
+
 
 ## Installation
 
