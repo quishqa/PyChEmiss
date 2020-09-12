@@ -106,7 +106,7 @@ io_style_emissions                  = 2,
 
 240 is the number of times (hours) in the `wrfchemi` file.
 
-For 24 hours of emissions data, the preprocessor will automatically build two 12-hour emission files: wrfchemi_00z_d02 (00 to 11 UTC) and wrfchemi_12z_d02 (12 to 23 UTC). In this case, set frame_per_auxinput5 to 12 and io_style_emissions to 1.
+For 24 hours of emissions data, the preprocessor will automatically build two 12-hour emission files: `wrfchemi_00z_d02` (00 to 11 UTC) and `wrfchemi_12z_d02` (12 to 23 UTC). In this case, set `frame_per_auxinput5` to 12 and `io_style_emissions` to 1.
 
 ### Output example
 Here there is a comparison between the local emission of CO (with &Delta;X= 3 Km) and the
