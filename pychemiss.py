@@ -233,7 +233,7 @@ def wrfchemi_to_netcdf(wrfchemi,wrfinput, date, emiss_names):
                 .assign_coords(emissions_zdim=0)
                 .expand_dims('emissions_zdim')
                 .transpose('Time', 'emissions_zdim', 'south_north', 'west_east')
-                .rename({'lat':'XALT',
+                .rename({'lat':'XLAT',
                          'lon':'XLONG'}))
     
     # Adding Times variable
