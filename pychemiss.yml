@@ -51,5 +51,3 @@ Emissions:
   - E_ECC
 Reggriding:
   method: nearest_s2d 
-Output:
-  output_name: wrfchemi_d02_pychemiss

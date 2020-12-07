@@ -6,8 +6,7 @@
 ## Installation
 
 You need to install the packages that `PyChEmiss` needs. We recommend to use
-[miniconda](https://docs.conda.io/en/latest/miniconda.html) or
-[anaconda](https://docs.anaconda.com/anaconda/install/)
+[miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
 You can download this repo or clone it by:
 
@@ -74,13 +73,12 @@ first columns have to be named "i", "lon", and "lat"**.
 * `sep`: Column delimiter in emission file. Use quotes (`""`)
 * `method`: we implement `nearest_s2d` methods for emissions regridding
 (a conservative method is on the way!).
-* `output_name` : location and name of produced `wrfchemi` file (`wrfchemi_d02_pychemiss`)
 
 ## Usage
 
 To run the script, type:
 ```
-python pychemiss.py pychemiss.yml
+python src/pychemiss.py pychemiss.yml
 ```
 
 To check that everything is working properly up to this point, we recommend to visualize the content of the output file, for example, by using `ncview`
@@ -90,7 +88,7 @@ ncview wrfchemi_d02_pychemiss
 
 ### WRF-Chem namelist configuration
 
-To use the `wrfchemi` file in a standard WRF-Chem simulation, change its name from `wrfchemi_d02_pychemiss` to `wrfchemi_d<domain>_<date>` (`wrfchemi_d01_2018-06-21_00:00:00` in this example) and set some control parameters in the `namelist.input` file as follows
+To use the `wrfchemi` file in a standard WRF-Chem simulation, set some control parameters in the `namelist.input` file as follows
 ```
 &time_control
 io_form_auxinput5                   = 2,
