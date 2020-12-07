@@ -262,13 +262,40 @@ def wrfchemi_to_netcdf(wrfchemi,wrfinput, date, emiss_names):
       
     return wrfchemi
     
+def name_wrfchemi_file(wrfinput, dates):
+    '''
+    Name wrfchemi file based on dates on emission file
+    (io_style_emissions = 1 or 2)
+
+    Parameters
+    ----------
+    wrfinput : xarray dataset
+        WRF-Chem wrfinput.
+    dates : pandas DateTimeIndex
+        Hourly values from start_date to end_date.
+
+    Returns
+    -------
+    file_name : str
+        wrfchemi name.
+
+    '''
+    dom = "".join(["d0", str(wrfinput.GRID_ID)])
+    if len(dates) > 24:
+        date_start = wrfinput.Times.values[0].decode("UTF-8")
+        file_name = "_".join(["wrfchemi", dom, date_start])
+    else:
+        file_name_00z = "_".join(["wrfchemi", dom, "00z"])
+        file_name_12z = "_".join(["wrfchemi", dom, "12z"])
+        file_name = (file_name_00z, file_name_12z)
+    return file_name
 
 
 if __name__ == '__main__':
     import sys
     import yaml
     if len(sys.argv) < 2:
-        print('usage: python {} pychemiss.yml'.format(sys.argv[0]))
+        print('usage: python {} src/pychemiss.yml'.format(sys.argv[0]))
         sys.exit()
 
     config_file = sys.argv[1]
@@ -291,23 +318,17 @@ if __name__ == '__main__':
     
     reggrid_method = config["Reggriding"]["method"]
     
-    output_name = config["Output"]["output_name"]
-    
-
-
     # Reading local emission file 
     emiss_df = read_local_emiss(emission_file, sep, has_header, 
                                 col_names)
     # Getting emitted species names
     emiss_names = col_names[3:]
     
-    
     # Emission file dimensions
     n_points = n_lon * n_lat
     lon1d = emiss_df["lon"][: n_lon].values
     lat1d = emiss_df["lat"][: n_points: n_lon].values[::-1]
     date = pd.date_range(start_date, end_date, freq='H')
-    
     
     # Transforming text into a xarray dataset    
     # We save each emission species dataset into a dict
@@ -321,26 +342,27 @@ if __name__ == '__main__':
     # Reading wrfinput file
     wrfinput = xr.open_dataset(wrfinput_file)
     
-    
     # Building wrfchemi data set
     if reggrid_method == 'nearest_s2d':
         wrfchemi = nearest_method(wrfinput, emiss_input, date, cell_area)
         
-    
     # Building wrfchemi netcdf
     wrfchemi = wrfchemi_to_netcdf(wrfchemi, wrfinput, date, emiss_names)
-    
+   
+    # Naming wrfchemi file
+    output_name = name_wrfchemi_file(wrfinput, date)
+
     # Writting wrfchemi netcdf
     if len(date) == 24:
         wrfchemi00z = wrfchemi.isel(Time=slice(0, 12))
         wrfchemi12z = wrfchemi.isel(Time=slice(12, 24))
-        wrfchemi00z.to_netcdf("wrfchemi_00z",
+        wrfchemi00z.to_netcdf(output_name[0],
                                encoding={"Times":{
                                    "char_dim_name": "DateStrLen"
                                    }
                                    },
                                unlimited_dims={"Time":True})
-        wrfchemi12z.to_netcdf("wrfchemi_12z",
+        wrfchemi12z.to_netcdf(output_name[1],
                                encoding={"Times":{
                                    "char_dim_name": "DateStrLen"
                                    }
