@@ -83,7 +83,7 @@ python src/pychemiss.py pychemiss.yml
 
 To check that everything is working properly up to this point, we recommend to visualize the content of the output file, for example, by using `ncview`
 ```
-ncview wrfchemi_d02_pychemiss
+ncview wrfchemi_d02_2018-06-21_00:00:00
 ```
 
 ### WRF-Chem namelist configuration
