@@ -361,13 +361,17 @@ if __name__ == '__main__':
                                    "char_dim_name": "DateStrLen"
                                    }
                                    },
-                               unlimited_dims={"Time":True})
+                               unlimited_dims={"Time":True},
+                               format="NETCDF3_64BIT",
+                               engine="netcdf4")
         wrfchemi12z.to_netcdf(output_name[1],
                                encoding={"Times":{
                                    "char_dim_name": "DateStrLen"
                                    }
                                    },
-                               unlimited_dims={"Time":True})
+                               unlimited_dims={"Time":True},
+                               format="NETCDF3_64BIT",
+                               engine="netcdf4")
 
     else:
         wrfchemi.to_netcdf(output_name,
@@ -375,7 +379,9 @@ if __name__ == '__main__':
                                "char_dim_name": "DateStrLen"
                                }
                                },
-                           unlimited_dims={"Time":True})
+                           unlimited_dims={"Time":True},
+                           format="NETCDF3_64BIT",
+                           engine="netcdf4")
     
     
     
