@@ -74,7 +74,7 @@ def create_dataset_per_emiss(emiss_df, emi, lat1d, lon1d, date):
     lon, lat = np.meshgrid(lon1d, lat1d)
     ds = xr.Dataset({emi: (('Time', 'south_north', 'west_east'), 
                            emiss_df[emi].values.reshape(len(date), lat.shape[0], lon.shape[1]))},
-                    coords={'Time': date,
+                    coords={'Time': np.arange(len(date)),
                             'lat': (('south_north', 'west_east'), lat),
                             'lon': (('south_north', 'west_east'), lon)})
     return ds
@@ -237,11 +237,14 @@ def wrfchemi_to_netcdf(wrfchemi,wrfinput, date, emiss_names):
                          'lon':'XLONG'}))
     
     # Adding Times variable
-    wrfchemi['Times'] = xr.DataArray(date
-                                     .strftime("%Y-%m-%d_%H:%M:%S")
-                                     .values,
+    date_s19 = np.array(
+            date.strftime("%Y-%m-%d_%H:%M:%S").values,
+            dtype=np.dtype(("S", 19))
+            )
+
+    wrfchemi['Times'] = xr.DataArray(date_s19,
                                      dims=['Time'],
-                                     coords={'Time': date.values})
+                                     coords={'Time': wrfchemi.Time.values})
     # Copying global attributes
     for key, value in wrfinput.attrs.items():
         wrfchemi.attrs[key] = value
