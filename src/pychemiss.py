@@ -293,6 +293,26 @@ def name_wrfchemi_file(wrfinput, dates):
         file_name = (file_name_00z, file_name_12z)
     return file_name
 
+def write_netcdf(wrfchemi, file_name):
+    wrfchemi.to_netcdf(file_name,
+                       encoding={
+                           "Times": {
+                               "char_dim_name": "DateStrLen"
+                               }
+                           },
+                       unlimited_dims={"Time": True},
+                       format="NETCDF3_64BIT")
+
+def write_wrfchemi(wrfchemi, wrfinput, dates):
+    output_name = name_wrfchemi_file(wrfinput, dates)
+    if len(wrfchemi.Times) == 24:
+        wrfchemi00z = wrfchemi.isel(Time=slice(0, 12))
+        wrfchemi12z = wrfchemi.isel(Time=slice(12, 24))
+        write_netcdf(wrfchemi00z, output_name[0])
+        write_netcdf(wrfchemi12z, output_name[1])
+    else:
+        write_netcdf(wrfchemi, output_name)
+
 
 if __name__ == '__main__':
     import sys
@@ -351,37 +371,7 @@ if __name__ == '__main__':
     # Building wrfchemi netcdf
     wrfchemi = wrfchemi_to_netcdf(wrfchemi, wrfinput, date, emiss_names)
    
-    # Naming wrfchemi file
-    output_name = name_wrfchemi_file(wrfinput, date)
-
     # Writting wrfchemi netcdf
-    if len(date) == 24:
-        wrfchemi00z = wrfchemi.isel(Time=slice(0, 12))
-        wrfchemi12z = wrfchemi.isel(Time=slice(12, 24))
-        wrfchemi00z.to_netcdf(output_name[0],
-                               encoding={"Times":{
-                                   "char_dim_name": "DateStrLen"
-                                   }
-                                   },
-                               unlimited_dims={"Time":True},
-                               format="NETCDF3_64BIT")
-        wrfchemi12z.to_netcdf(output_name[1],
-                               encoding={"Times":{
-                                   "char_dim_name": "DateStrLen"
-                                   }
-                                   },
-                               unlimited_dims={"Time":True},
-                               format="NETCDF3_64BIT")
-
-    else:
-        wrfchemi.to_netcdf(output_name,
-                           encoding={"Times":{
-                               "char_dim_name": "DateStrLen"
-                               }
-                               },
-                           unlimited_dims={"Time":True},
-                           format="NETCDF3_64BIT")
-    
-    
+    write_wrfchemi(wrfchemi, wrfinput, date)
     
     print("Successful completion of PyChEmiss!")
