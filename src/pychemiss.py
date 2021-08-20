@@ -71,7 +71,7 @@ def create_dataset_per_emiss(emiss_df, emi, lat1d, lon1d, date):
         dataset of emitted species.
 
     '''
-    lon, lat = np.meshgrid(lon1d, lat1d[::-1])
+    lon, lat = np.meshgrid(lon1d, lat1d)
     ds = xr.Dataset({emi: (('Time', 'south_north', 'west_east'), 
                            emiss_df[emi].values.reshape(len(date), lat.shape[0], lon.shape[1]))},
                     coords={'Time': date,
@@ -327,7 +327,7 @@ if __name__ == '__main__':
     # Emission file dimensions
     n_points = n_lon * n_lat
     lon1d = emiss_df["lon"][: n_lon].values
-    lat1d = emiss_df["lat"][: n_points: n_lon].values[::-1]
+    lat1d = emiss_df["lat"][: n_points: n_lon].values
     date = pd.date_range(start_date, end_date, freq='H')
     
     # Transforming text into a xarray dataset    
