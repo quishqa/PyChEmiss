@@ -201,7 +201,6 @@ def nearest_method(wrfinput, emiss_input, date, cell_area):
           .format(emiss_no_wrf.values))    
     print("Total NO2 emission after regridding = {:.2f} kTn "
           .format(emiss_no2_wrf.values))
-    #regridder.clean_weight_file()
         
     return wrfchemi
 
