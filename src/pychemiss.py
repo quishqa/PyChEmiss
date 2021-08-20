@@ -332,9 +332,8 @@ if __name__ == '__main__':
     
     # Transforming text into a xarray dataset    
     # We save each emission species dataset into a dict
-    DS = {}
-    for emi in emiss_names:
-        DS[emi] = create_dataset_per_emiss(emiss_df, emi, lat1d, lon1d, date)
+    DS = {emi: create_dataset_per_emiss(emiss_df, emi, lat1d, lon1d, date) 
+          for emi in emiss_names}
         
     # Merging species datasets into one dateset
     emiss_input = xr.merge(list(DS.values()))
