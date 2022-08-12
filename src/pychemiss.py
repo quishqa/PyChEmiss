@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-PyChEmiss: A python emissions preprocessor for WRF-Chem regional modelling 
+PyChEmiss: A python emissions preprocessor for WRF-Chem regional modelling
 
 A preprocessor to create wrfchemi file from local emission information.
-It is based on his older brother AAS4WRF.ncl 
+It is based on his older brother AAS4WRF.ncl
 (https://github.com/alvv1986/AAS4WRF/blob/master/AGU2017_Poster.pdf)
-
-
 """
 
 import numpy as np
@@ -37,7 +35,7 @@ def read_local_emiss(emission_file, sep, has_header, col_names):
 
     '''
     if has_header:
-        emiss_df = pd.read_csv(emission_file, 
+        emiss_df = pd.read_csv(emission_file,
                                delimiter=sep)
     else:
         emiss_df = pd.read_csv(emission_file,
@@ -72,7 +70,7 @@ def create_dataset_per_emiss(emiss_df, emi, lat1d, lon1d, date):
 
     '''
     lon, lat = np.meshgrid(lon1d, lat1d)
-    ds = xr.Dataset({emi: (('Time', 'south_north', 'west_east'), 
+    ds = xr.Dataset({emi: (('Time', 'south_north', 'west_east'),
                            emiss_df[emi].values.reshape(len(date), lat.shape[0], lon.shape[1]))},
                     coords={'Time': np.arange(len(date)),
                             'lat': (('south_north', 'west_east'), lat),
@@ -80,7 +78,7 @@ def create_dataset_per_emiss(emiss_df, emi, lat1d, lon1d, date):
     return ds
 
 
-    
+
 def total_emiss_wrfchemi(wrfchemi, pol, molecular_mass, wrfinput):
     '''
     Calculates total emission of regridded local emissions in kTn.
@@ -161,21 +159,21 @@ def nearest_method(wrfinput, emiss_input, date, cell_area):
                                   'lon': (('south_north', 'west_east'), xlon)})
     regridder = xe.Regridder(emiss_input, grid_out, 'nearest_s2d')
     wrfchemi = regridder(emiss_input)
-    
+
     # Calculating CO, NO and NO2 total emiss to check conservation
-    emiss_co = total_emiss_emiss_input(emiss_input, 
+    emiss_co = total_emiss_emiss_input(emiss_input,
                                        'E_CO',
                                        28,
                                        cell_area)
-    emiss_no = total_emiss_emiss_input(emiss_input, 
+    emiss_no = total_emiss_emiss_input(emiss_input,
                                        'E_NO',
                                        30,
                                        cell_area)
-    emiss_no2 = total_emiss_emiss_input(emiss_input, 
+    emiss_no2 = total_emiss_emiss_input(emiss_input,
                                        'E_NO2',
                                        46,
                                        cell_area)
-    
+
     emiss_co_wrf = total_emiss_wrfchemi(wrfchemi,
                                         'E_CO',
                                         28,
@@ -188,20 +186,20 @@ def nearest_method(wrfinput, emiss_input, date, cell_area):
                                          'E_NO2',
                                          46,
                                          wrfinput)
-    
+
     print("----------INPUT TOTAL EMISSIONS----------")
     print("Total CO emission = {:.2f} kTn".format(emiss_co.values))
     print("Total NO emission = {:.2f} kTn".format(emiss_no.values))
     print("Total NO2 emission = {:.2f} kTn".format(emiss_no2.values))
-    
+
     print("----------AFTER REGRIDDING TOTAL EMISSION----------")
     print("Total CO emission after regridding = {:.2f} kTn "
           .format(emiss_co_wrf.values))
     print("Total NO emission after regridding = {:.2f} kTn "
-          .format(emiss_no_wrf.values))    
+          .format(emiss_no_wrf.values))
     print("Total NO2 emission after regridding = {:.2f} kTn "
           .format(emiss_no2_wrf.values))
-        
+
     return wrfchemi
 
 
@@ -234,7 +232,7 @@ def wrfchemi_to_netcdf(wrfchemi,wrfinput, date, emiss_names):
                 .transpose('Time', 'emissions_zdim', 'south_north', 'west_east')
                 .rename({'lat':'XLAT',
                          'lon':'XLONG'}))
-    
+
     # Adding Times variable
     date_s19 = np.array(
             date.strftime("%Y-%m-%d_%H:%M:%S").values,
@@ -247,11 +245,11 @@ def wrfchemi_to_netcdf(wrfchemi,wrfinput, date, emiss_names):
     # Copying global attributes
     for key, value in wrfinput.attrs.items():
         wrfchemi.attrs[key] = value
-    
+
     # Adding a TITLE
     wrfchemi['TITLE'] = "OUTPUT FROM PYCHEMISS PREPROCESSOR"
-    
-     
+
+
     # Adding attributes to emitted species variables
     for emi in emiss_names:
         wrfchemi[emi].attrs['FieldType'] = 104
@@ -260,10 +258,10 @@ def wrfchemi_to_netcdf(wrfchemi,wrfinput, date, emiss_names):
         wrfchemi[emi].attrs['units'] = 'mol km^2 hr^-1'
         wrfchemi[emi].attrs['stagger'] = ''
         wrfchemi[emi].attrs['coordinates'] = 'XLONG XLAT'
- 
-      
+
+
     return wrfchemi
-    
+
 def name_wrfchemi_file(wrfinput, dates):
     '''
     Name wrfchemi file based on dates on emission file
@@ -321,14 +319,14 @@ if __name__ == '__main__':
         sys.exit()
 
     config_file = sys.argv[1]
-        
+
     # Retrieving parameters from config file
     with open(config_file) as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-        
+
     wrfinput_file = config['Input']['wrfinput_file']
     emission_file = config['Input']['emission_file']
-    
+
     n_lon = config['Emissions']['nx']
     n_lat = config['Emissions']['ny']
     start_date = config['Emissions']['start_date']
@@ -337,40 +335,40 @@ if __name__ == '__main__':
     sep = config['Emissions']['sep']
     col_names = config['Emissions']['col_names']
     cell_area = config["Emissions"]["cell_area"]
-    
+
     reggrid_method = config["Reggriding"]["method"]
-    
-    # Reading local emission file 
-    emiss_df = read_local_emiss(emission_file, sep, has_header, 
+
+    # Reading local emission file
+    emiss_df = read_local_emiss(emission_file, sep, has_header,
                                 col_names)
     # Getting emitted species names
     emiss_names = col_names[3:]
-    
+
     # Emission file dimensions
     n_points = n_lon * n_lat
     lon1d = emiss_df["lon"][: n_lon].values
     lat1d = emiss_df["lat"][: n_points: n_lon].values
     date = pd.date_range(start_date, end_date, freq='H')
-    
-    # Transforming text into a xarray dataset    
+
+    # Transforming text into a xarray dataset
     # We save each emission species dataset into a dict
-    DS = {emi: create_dataset_per_emiss(emiss_df, emi, lat1d, lon1d, date) 
+    DS = {emi: create_dataset_per_emiss(emiss_df, emi, lat1d, lon1d, date)
           for emi in emiss_names}
-        
+
     # Merging species datasets into one dateset
     emiss_input = xr.merge(list(DS.values()))
-        
+
     # Reading wrfinput file
     wrfinput = xr.open_dataset(wrfinput_file)
-    
+
     # Building wrfchemi data set
     if reggrid_method == 'nearest_s2d':
         wrfchemi = nearest_method(wrfinput, emiss_input, date, cell_area)
-        
+
     # Building wrfchemi netcdf
     wrfchemi = wrfchemi_to_netcdf(wrfchemi, wrfinput, date, emiss_names)
-   
+
     # Writting wrfchemi netcdf
     write_wrfchemi(wrfchemi, wrfinput, date)
-    
+
     print("Successful completion of PyChEmiss!")
