@@ -188,17 +188,14 @@ def nearest_method(wrfinput, emiss_input, date, cell_area):
                                          wrfinput)
 
     print("----------INPUT TOTAL EMISSIONS----------")
-    print("Total CO emission = {:.2f} kTn".format(emiss_co.values))
-    print("Total NO emission = {:.2f} kTn".format(emiss_no.values))
-    print("Total NO2 emission = {:.2f} kTn".format(emiss_no2.values))
+    print(f"Total CO emission = {emiss_co.values:.2f} kTn")
+    print(f"Total NO emission = {emiss_no.values:.2f} kTn")
+    print(f"Total NO2 emission = {emiss_no2.values:.2f} kTn")
 
     print("----------AFTER REGRIDDING TOTAL EMISSION----------")
-    print("Total CO emission after regridding = {:.2f} kTn "
-          .format(emiss_co_wrf.values))
-    print("Total NO emission after regridding = {:.2f} kTn "
-          .format(emiss_no_wrf.values))
-    print("Total NO2 emission after regridding = {:.2f} kTn "
-          .format(emiss_no2_wrf.values))
+    print(f"Total CO emission after regridding = {emiss_co_wrf.values:.2f} kTn")
+    print(f"Total NO emission after regridding = {emiss_no_wrf.values:.2f} kTn")
+    print(f"Total NO2 emission after regridding = {emiss_no2_wrf.values:.2f} kTn")
 
     return wrfchemi
 
@@ -315,7 +312,7 @@ if __name__ == '__main__':
     import sys
     import yaml
     if len(sys.argv) < 2:
-        print('usage: python {} src/pychemiss.yml'.format(sys.argv[0]))
+        print(f"usage: python {sys.arg[0]} src/pychemiss.yml")
         sys.exit()
 
     config_file = sys.argv[1]
