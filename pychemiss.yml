@@ -1,6 +1,6 @@
 Input:
-  wrfinput_file: ./wrfinput_d02
-  emission_file: ./emissions_3km.txt
+  wrfinput_file: ./data/wrfinput_d02
+  emission_file: ./data/emissions_3km.txt
 Emissions:
   nx: 30
   ny: 27

@@ -1,2 +1,4 @@
+data/**
 *.ipynb
 *.nc
+wrfchemi*
