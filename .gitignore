@@ -1,6 +1,5 @@
 data/wrfinput_d02
 data/emissions_3km.txt
-results/wrfchemi*
+results/wrfchemi_d02_2018-06-21_00:00:00
 *.ipynb
 *.nc
-wrfchemi*
