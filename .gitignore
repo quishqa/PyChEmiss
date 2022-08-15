@@ -1,4 +1,5 @@
-data/*.tar.gz
+data/wrfinput_d02
+data/emissions_3km.txt
 results/wrfchemi*
 *.ipynb
 *.nc
