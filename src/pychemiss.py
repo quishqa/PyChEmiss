@@ -290,7 +290,7 @@ def name_wrfchemi_file(wrfinput, dates):
         file_name = (file_name_00z, file_name_12z)
     return file_name
 
-def write_netcdf(wrfchemi, file_name):
+def write_netcdf(wrfchemi, file_name, path="./results/"):
     '''
     Name wrfchemi file based on dates on emission file
 
@@ -307,7 +307,7 @@ def write_netcdf(wrfchemi, file_name):
         wrfchemi written in netcdf.
 
     '''
-    wrfchemi.to_netcdf(file_name,
+    wrfchemi.to_netcdf(path + file_name,
                        encoding={
                            "Times": {
                                "char_dim_name": "DateStrLen"

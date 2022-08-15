@@ -1,4 +1,5 @@
-data/**
+data/*.tar.gz
+results/wrfchemi*
 *.ipynb
 *.nc
 wrfchemi*
