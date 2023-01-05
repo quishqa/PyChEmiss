@@ -1,6 +1,6 @@
 # PyChEmiss
 
-`PyChEmiss` is a Python script to create the `wrfchemi` file from local emissions needed to run WRF-Chem model. It's based on his older broder [AAS4WRF.ncl](https://github.com/alvv1986/AAS4WRF).
+`PyChEmiss` is a Python script to create the `wrfchemi` file from surface local emissions needed to run WRF-Chem model. It's based on his older broder [AAS4WRF.ncl](https://github.com/alvv1986/AAS4WRF).
 
 
 ## Installation
@@ -52,7 +52,7 @@ conda install --yes --file requirements.txt
 If everything goes well, you are ready to go.
 
 ## The input data
-To run this script you need the `wrfinput_d0x` and your temporal and spatial disaggregated emissions in **mol/km<sup>2</sup>/hr**. You can see the needed format by exploring `emissions_3km.txt` file.
+To run this script you need the `wrfinput_d0x` and your temporal and spatial disaggregated emissions in **mol/km<sup>2</sup>/hr** for gasses and in **ug/m<sup>2</sup>/s** for aerossol species. You can see the needed format by exploring `emissions_3km.txt` file.
 
 To untar the example files:
 ```
